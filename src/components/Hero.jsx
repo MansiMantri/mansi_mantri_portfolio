@@ -1,10 +1,47 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import { profiles, personalInfo, socialLinks } from '../data/portfolioData';
 import avatarImg from '../assets/about/avatar.png';
 
-const Hero = ({ activeRole, setActiveRole }) => {
+const ROLE_WORDS = ['Software Engineer', 'Data Analyst', 'Full Stack Developer'];
+
+const TypewriterRole = () => {
+  const [wordIndex, setWordIndex] = useState(0);
+  const [text, setText] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  useEffect(() => {
+    const currentWord = ROLE_WORDS[wordIndex];
+    const pauseTime = 1500;
+    let timeout;
+
+    if (!isDeleting && text === currentWord) {
+      timeout = setTimeout(() => setIsDeleting(true), pauseTime);
+    } else if (isDeleting && text === '') {
+      setIsDeleting(false);
+      setWordIndex((prev) => (prev + 1) % ROLE_WORDS.length);
+    } else {
+      const typingSpeed = isDeleting ? 45 : 90;
+      timeout = setTimeout(() => {
+        setText((prev) =>
+          isDeleting ? currentWord.slice(0, prev.length - 1) : currentWord.slice(0, prev.length + 1)
+        );
+      }, typingSpeed);
+    }
+
+    return () => clearTimeout(timeout);
+  }, [text, isDeleting, wordIndex]);
+
+  return (
+    <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ff2a2a] to-red-400 font-extrabold uppercase">
+      {text}
+      <span className="inline-block w-[3px] md:w-[4px] h-[0.85em] bg-[#ff2a2a] ml-1 align-middle animate-pulse" />
+    </span>
+  );
+};
+
+const Hero = ({ activeRole }) => {
   useEffect(() => {
     AOS.init({
       duration: 1000,
@@ -86,41 +123,14 @@ const Hero = ({ activeRole, setActiveRole }) => {
             </a>
           </div>
 
-          {/* Dynamic Profile/Role Switcher Tabs */}
-          <div 
-            data-aos="fade-up"
-            data-aos-delay="150"
-            className="flex flex-row flex-wrap gap-2 mb-8 bg-white/5 border border-white/10 p-1.5 rounded-2xl backdrop-blur-md relative z-30"
-          >
-            {[
-              { id: 'software_engineer', label: 'Software Engineer' },
-              { id: 'full_stack', label: 'Full Stack Developer' },
-              { id: 'data_analyst', label: 'Data Analyst' }
-            ].map((role) => (
-              <button
-                key={role.id}
-                onClick={() => setActiveRole(role.id)}
-                className={`px-4 py-2 text-xs md:text-sm font-bold tracking-wide rounded-xl cursor-pointer transition-all duration-300 ${
-                  activeRole === role.id
-                    ? 'bg-[#ff2a2a] text-white shadow-md'
-                    : 'text-white/60 hover:text-white hover:bg-white/5'
-                }`}
-              >
-                {role.label}
-              </button>
-            ))}
-          </div>
-
           {/* Main Heading */}
-          <h1 
+          <h1
             data-aos="fade-up"
             data-aos-delay="200"
-            className="text-white text-3xl md:text-5xl lg:text-6xl font-bold mb-4 tracking-tight leading-tight"
+            className="text-white text-3xl md:text-5xl lg:text-6xl font-bold mb-4 tracking-tight leading-tight min-h-[2.4em] md:min-h-[2.2em]"
           >
-            Hi, I'm Mansi Mantri, <br /> 
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ff2a2a] to-red-400 font-extrabold uppercase">
-              {currentProfile.roleTitle}
-            </span>
+            Hi, I'm Mansi Mantri, <br />
+            <TypewriterRole />
           </h1>
 
           {/* Subheading */}
@@ -155,8 +165,8 @@ const Hero = ({ activeRole, setActiveRole }) => {
             </a>
 
             {/* Resume Download Button */}
-            <a 
-              href={currentProfile.resumeUrl}
+            <a
+              href="/Mansi_Mantri_Software_Engineer_Resume.pdf"
               download
               className="px-5 py-2.5 text-xs md:text-base rounded-full bg-transparent border border-white/50 text-white font-bold hover:bg-white hover:text-black transition-all duration-300 backdrop-blur-md flex items-center gap-2"
             >

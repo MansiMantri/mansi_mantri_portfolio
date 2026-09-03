@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import Preloader from './components/Preloader'
 import Navbar from './components/Navbar'
 import Hero from './components/Hero'
@@ -13,13 +13,13 @@ import Contact from './components/Contact'
 import Footer from './components/Footer'
 
 function App() {
-  const [activeRole, setActiveRole] = useState('software_engineer'); // software_engineer, full_stack, data_analyst
+  const activeRole = 'software_engineer';
 
   return (
     <>
       <Preloader />
       <Navbar activeRole={activeRole} />
-      <Hero activeRole={activeRole} setActiveRole={setActiveRole} />
+      <Hero activeRole={activeRole} />
       <About activeRole={activeRole} />
       <TechnicalSkills activeRole={activeRole} />
       <Internships activeRole={activeRole} />
